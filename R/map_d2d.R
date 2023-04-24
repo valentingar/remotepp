@@ -27,11 +27,15 @@ map_d2d <- function(input_files,
   stopifnot("out_dir does not exist!" = dir.exists(out_dir))
   stopifnot("Not all input_files exist!" = all(file.exists(input_files)))
 
+
   out_names <- basename(input_files)
   out_files <- paste0(out_dir, "/", out_names)
 
-  if (!overwrite & any(file.exists(out_files))){
-    file.remove(out_files)
+  stopifnot("Output files exist and overwrite is FALSE" =
+              (!any(file.exists(out_files)) | overwrite))
+
+  if (overwrite & any(file.exists(out_files))){
+    lapply(out_files, file.remove)
   }
 
 
