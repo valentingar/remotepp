@@ -2,5 +2,6 @@
 
 S3method(ndvi,RasterStack)
 S3method(ndvi,character)
+export(create_gif)
 export(map_d2d)
 export(ndvi)
