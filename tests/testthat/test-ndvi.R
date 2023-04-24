@@ -1,4 +1,4 @@
-test_that("multiplication works", {
+test_that("NDVI works on memory objects", {
   test_data <- readRDS(test_path("fixtures", "test_data.rds"))
 
   NDVI_manual <-
