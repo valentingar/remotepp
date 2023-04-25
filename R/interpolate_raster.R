@@ -35,76 +35,74 @@ interpolate_raster <- function(input_files,
   n_layers <- raster::nlayers(raster::stack(input_files[1]))
   layer_names <- names(raster::stack(input_files[1]))
 
-  out_files_tmp <- sapply(1:(n_layers * length(out_dates)),
+  out_files_tmp <- sapply(1:n_layers,
                           raster::rasterTmpFile) |>
     matrix(ncol = n_layers)
-
-  p <- progressr::progressor(length(out_files_tmp))
 
   on.exit(raster::removeTmpFiles(h = 0))
 
   # loop over layers
-  for(current_layer in 1:n_layers){
+  furrr::future_map(1:n_layers, function(current_layer){
 
-  out_files <- out_files_tmp[ ,current_layer]
+  out_file <- out_files_tmp[1, current_layer]
 
   current_in <- raster::stack(input_files, bands = current_layer)
   current_in <- raster::readStart(current_in)
 
-  block_size <- raster::blockSize(current_in[[1]])
+  current_brick <- raster::brick(nrows = nrow(current_in),
+                                 ncols = ncol(current_in),
+                                 nl = length(out_dates),
+                                 crs = raster::crs(current_in))
+  raster::extent(current_brick) <- raster::extent(current_in)
 
-  for (j in seq_along(out_files)){
-    current_out <- raster::raster(current_in[[1]])
+  block_size <- raster::blockSize(current_brick)
 
-    current_out <- raster::writeStart(raster::raster(current_in[[1]]),
-                                      filename = out_files[j],
-                                      overwrite = TRUE)
+  current_out <- raster::writeStart(current_brick,
+                                    filename = out_file,
+                                    overwrite = TRUE)
 
-    on.exit(current_out <- raster::writeStop(current_out))
+  p <- progressr::progressor(length(block_size$row))
 
 
-    for (i in seq_along(block_size$row)) {
-      # read values for block
-      current_row <- raster::getValues(current_in,
-                                       row = block_size$row[i],
-                                       nrows = block_size$nrows[i])
+  for (i in seq_along(block_size$row)) {
+    # read values for block
+    current_row <- raster::getValues(current_in,
+                                     row = block_size$row[i],
+                                     nrows = block_size$nrows[i])
 
-      current_row <- apply(current_row,
-                           FUN = function(x){
+    current_row <- t(apply(current_row,
+                         FUN = function(x){
 
-                             tryCatch(x <-
-                                        do.call(
-                                          interpolation_function,
-                                          c(list(x = in_dates,
-                                                 y = x,
-                                                 xout =  out_dates[j]),
-                                            interpolation_arguments)
-                                        ),
-                                      error = function(cond) NA)
+                           tryCatch(x <-
+                                      do.call(
+                                        interpolation_function,
+                                        c(list(x = in_dates,
+                                               y = x,
+                                               xout =  out_dates),
+                                          interpolation_arguments)
+                                      ),
+                                    error = function(cond) rep(NA, length(out_dates)))
 
-                           },
-                           MARGIN = 1)
+                         },
+                         MARGIN = 1))
 
-      current_out <- raster::writeValues(current_out,
+    current_out <- raster::writeValues(current_out,
                                          current_row,
                                          block_size$row[i])
-
-
-
-    }
-
-    current_out <- raster::writeStop(current_out)
 
     p()
 
   }
 
+  current_out <- raster::writeStop(current_out)
   on.exit(current_in <- raster::readStop(current_in))
 
-  }
+  NULL
+  })
 
-  lapply(1:nrow(out_files_tmp), function(i){
-    current_out <- terra::rast(out_files_tmp[i, ])
+  furrr::future_map(1:length(out_files_final), function(i){
+    current_out <- raster::stack(out_files_tmp[1, ], bands = i)
+    current_out <- terra::rast(current_out)
     names(current_out) <- layer_names
     raster::writeRaster(current_out, out_files_final[i])
   })
