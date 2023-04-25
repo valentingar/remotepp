@@ -29,7 +29,7 @@ interpolate_raster <- function(input_files,
   out_files_final <- paste0(out_dir, out_dates, ".tif")
 
   if(overwrite == TRUE){
-    file.remove(out_files_final)
+    file.remove(out_files_final[file.exists(out_files_final)])
   }
 
   n_layers <- raster::nlayers(raster::stack(input_files[1]))
@@ -38,6 +38,8 @@ interpolate_raster <- function(input_files,
   out_files_tmp <- sapply(1:(n_layers * length(out_dates)),
                           raster::rasterTmpFile) |>
     matrix(ncol = n_layers)
+
+  p <- progressr::progressor(length(out_files_tmp))
 
   on.exit(raster::removeTmpFiles(h = 0))
 
@@ -70,9 +72,17 @@ interpolate_raster <- function(input_files,
       current_row <-
         t(
           sapply(1:nrow(current_row), function(current_cell) {
-            interpolation_function(x = in_dates,
-                                   y = current_row[current_cell, ],
-                                   xout = out_dates[j])
+
+            tryCatch(x <-
+                       do.call(
+                         interpolation_function,
+                         c(list(x = in_dates,
+                                y = current_row[current_cell, ],
+                                xout =  out_dates[j]),
+                           interpolation_arguments)
+                       ),
+                     error = function(cond) NA)
+
           }))
 
       current_out <- raster::writeValues(current_out,
@@ -84,6 +94,8 @@ interpolate_raster <- function(input_files,
     }
 
     current_out <- raster::writeStop(current_out)
+
+    p()
 
   }
 
