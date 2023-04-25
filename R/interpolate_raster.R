@@ -51,14 +51,14 @@ interpolate_raster <- function(input_files,
   current_in <- raster::stack(input_files, bands = current_layer)
   current_in <- raster::readStart(current_in)
 
+  block_size <- raster::blockSize(current_in[[1]])
+
   for (j in seq_along(out_files)){
     current_out <- raster::raster(current_in[[1]])
 
     current_out <- raster::writeStart(raster::raster(current_in[[1]]),
                                       filename = out_files[j],
                                       overwrite = TRUE)
-
-    block_size <- raster::blockSize(current_out)
 
     on.exit(current_out <- raster::writeStop(current_out))
 
@@ -69,21 +69,21 @@ interpolate_raster <- function(input_files,
                                        row = block_size$row[i],
                                        nrows = block_size$nrows[i])
 
-      current_row <-
-        t(
-          sapply(1:nrow(current_row), function(current_cell) {
+      current_row <- apply(current_row,
+                           FUN = function(x){
 
-            tryCatch(x <-
-                       do.call(
-                         interpolation_function,
-                         c(list(x = in_dates,
-                                y = current_row[current_cell, ],
-                                xout =  out_dates[j]),
-                           interpolation_arguments)
-                       ),
-                     error = function(cond) NA)
+                             tryCatch(x <-
+                                        do.call(
+                                          interpolation_function,
+                                          c(list(x = in_dates,
+                                                 y = x,
+                                                 xout =  out_dates[j]),
+                                            interpolation_arguments)
+                                        ),
+                                      error = function(cond) NA)
 
-          }))
+                           },
+                           MARGIN = 1)
 
       current_out <- raster::writeValues(current_out,
                                          current_row,
