@@ -142,10 +142,10 @@ interpolate_raster <- function(input_files,
   })
 
   purrr::map(1:length(out_files_final), function(i){
-    #current_out <- raster::stack(out_files_tmp[1, ], bands = i)
-    current_out <- terra::rast(out_files_tmp[1, ], lyrs = rep(i, ncol(out_files_tmp)))
-    names(current_out) <- layer_names
-    terra::writeRaster(current_out, out_files_final[i])
+    current_out <- raster::stack(out_files_tmp[1, ], bands = i)
+    #current_out <- terra::rast(out_files_tmp[1, ], lyrs = rep(i, ncol(out_files_tmp)))
+    #names(current_out) <- layer_names
+    raster::writeRaster(current_out, out_files_final[i])
   })
 
   NULL
