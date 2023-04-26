@@ -10,7 +10,7 @@ interpolate_raster <- function(input_files,
                                in_dates,
                                out_dates,
                                out_dir,
-                               interpolation_function = function(x,y,xout) (approx(x,y,xout))$y,
+                               interpolation_function = function(x, y, xout) (approx(x, y, xout, ties = mean))$y,
                                interpolation_arguments = list(), # further arguments passed to interpolation function()
                                overwrite = FALSE
 ){
@@ -102,7 +102,7 @@ interpolate_raster <- function(input_files,
 
   furrr::future_map(1:length(out_files_final), function(i){
     current_out <- raster::stack(out_files_tmp[1, ], bands = i)
-    current_out <- terra::rast(current_out)
+    current_out <- terra::rast(current_out) # NOT WORKING FOR SINGLE LAYER???
     names(current_out) <- layer_names
     raster::writeRaster(current_out, out_files_final[i])
   })
