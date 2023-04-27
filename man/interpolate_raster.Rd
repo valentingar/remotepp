@@ -9,7 +9,7 @@ interpolate_raster(
   in_dates,
   out_dates,
   out_dir,
-  interpolation_function = function(x, y, xout) (approx(x, y, xout))$y,
+  interpolation_function = function(x, y, xout) (approx(x, y, xout, ties = mean))$y,
   interpolation_arguments = list(),
   overwrite = FALSE
 )
