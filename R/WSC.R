@@ -61,12 +61,24 @@ WSC <- function(wsc_method,
   if(wsc_method == "deficit"){
     ignore_argument_message(SWIR1, "SWIR1")
     ignore_argument_message(SWIR2, "SWIR2")
+    ignore_argument_message(NIR, "NIR")
+    ignore_argument_message(prec, "prec")
+
+
 
     WSC_out <- WSC_deficit(D_e)
   } else if (wsc_method == "SIMI"){
     ignore_argument_message(D_e, "D_e")
+    ignore_argument_message(NIR, "NIR")
+    ignore_argument_message(prec, "prec")
 
     WSC_out <- WSC_SIMI(SWIR1, SWIR2)
+  } else if (wsc_method == "LSWI"){
+    ignore_argument_message(D_e, "D_e")
+    ignore_argument_message(SWIR2, "SWIR2")
+
+
+    WSC_out <- WSC_LSWI(SWIR1, NIR, prec)
   }
 
   WSC_out
