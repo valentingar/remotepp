@@ -8,11 +8,11 @@
 #'   implemented:
 #' \describe{
 #'
-#' \item{deficit}{Requires the vapour pressure deficit (D_e) in kPa. \cr
+#' \item{deficit}{Requires the vapour pressure deficit \strong{D_e} in kPa. \cr
 #'   \eqn{WSC = 1.2 \cdot exp(-0.35 \cdot D_e) - 0.2}. \cr Tang et al. (2014)}
 #'
-#' \item{SIMI}{Remote sensinsg data driven. Requires bands SWIR1
-#' (1.628 - 1.652 µm) and SWIR2 (2.105 - 2.155 µm) to be provided.
+#' \item{SIMI}{Remote sensinsg data driven. Requires bands \strong{SWIR1}
+#' (1.628 - 1.652 µm) and \strong{SWIR2} (2.105 - 2.155 µm) to be provided.
 #'   WSC is calculated per pixel. The min and max of SIMI are also calculated
 #'   per pixel. \cr
 #'   \eqn{SIMI = 0.7071 \cdot sqrt(SWIR1^2 + SWIR2^2)} \cr
@@ -21,13 +21,13 @@
 #'   Wu et al. (2022)}
 #'
 #' \item{LSWI}{Remote sensinsg and meteorological data driven. Requires bands
-#' SWIR1 (1.628 - 1.652 µm) and NIR to be provided. \cr
+#' \strong{SWIR1} (1.628 - 1.652 µm) and \strong{NIR} to be provided, as well as \strong{prec}. \cr
 #' WSC is calculated per pixel. The max of LSWI is also calculated per pixel.
 #' A rolling sum of the last 30 days is applied to prec to get the monthly
-#' precipitation.
+#' precipitation. \cr
 #'   \eqn{LSWI = (NIR - SWIR1) / (NIR + SWIR1)} \cr
-#'   \eqn{WSC_vpm,in = (1 - (1 + LSWI) / (1 + LSWI_max)) + 0.5} \cr
-#'   \eqn{WSC = prec / prec_max \cdot WSC_vpm,in + 0.5} \cr
+#'   \eqn{WSC_{vpm,in} = (1 - (1 + LSWI) / (1 + LSWI_{max})) + 0.5} \cr
+#'   \eqn{WSC = prec / prec_{max} \cdot WSC_{vpm,in} + 0.5} \cr
 #'   Bao et al. (2015)}
 #'
 #' }
@@ -42,8 +42,8 @@
 #'
 #' @references
 #' \insertRef{Tang2014}{remotepp} \cr
-#' \insertRef{Bao2016}{remotepp}\cr
-#' \insertRef{Wu2022}{remotepp}\cr
+#' \insertRef{Bao2016}{remotepp} \cr
+#' \insertRef{Wu2022}{remotepp} \cr
 #'
 #' @importFrom Rdpack reprompt
 #'

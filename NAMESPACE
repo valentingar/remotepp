@@ -3,6 +3,8 @@
 S3method(ndvi,RasterStack)
 S3method(ndvi,character)
 export(ET_FAO56)
+export(TSC1)
+export(TSC2)
 export(WSC)
 export(create_gif)
 export(interpolate_raster)
