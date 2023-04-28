@@ -25,3 +25,6 @@ reference evapotranspiration in mm m^-2 d^-1
 \description{
 Calculate Evapotranspiration using Penman-Monteith FAO56
 }
+\references{
+ISBN 92-5-104219-5
+}

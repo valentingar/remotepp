@@ -9,6 +9,7 @@
 #'
 #' @returns reference evapotranspiration in mm m^-2 d^-1
 #'
+#' @references ISBN 92-5-104219-5
 #'@export
 
 
