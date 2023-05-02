@@ -49,7 +49,7 @@
 #'
 #' @export
 
-WSC <- function(wsc_method,
+calc_WSC <- function(wsc_method,
                 D_e = NULL,
                 SWIR1 = NULL,
                 SWIR2 = NULL,
@@ -64,8 +64,6 @@ WSC <- function(wsc_method,
     ignore_argument_message(NIR, "NIR")
     ignore_argument_message(prec, "prec")
 
-
-
     WSC_out <- WSC_deficit(D_e)
   } else if (wsc_method == "SIMI"){
     ignore_argument_message(D_e, "D_e")
@@ -76,7 +74,6 @@ WSC <- function(wsc_method,
   } else if (wsc_method == "LSWI"){
     ignore_argument_message(D_e, "D_e")
     ignore_argument_message(SWIR2, "SWIR2")
-
 
     WSC_out <- WSC_LSWI(SWIR1, NIR, prec)
   }

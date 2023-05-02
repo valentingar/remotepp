@@ -13,7 +13,7 @@
 #'
 #' @export
 
-TSC1 <- function(temperature,
+calc_TSC1 <- function(temperature,
                  temperature_opt){
 
 
@@ -29,9 +29,22 @@ TSC1 <- function(temperature,
 #' @rdname TSC
 #' @export
 
-TSC2 <- function(temperature,
+calc_TSC2 <- function(temperature,
                  temperature_opt){
 
   TSC2_out <- 1.1814 / (1 + exp(0.2 * (temperature_opt - 10 - temperature))) * (1 / (1+exp(0.3*(-temperature_opt - 10 + temperature))))
   TSC2_out
+}
+
+
+### HELPERS --------------------------------------------------------------------
+calc_temperature_opt <- function(NDVI, temperature){
+  stopifnot("NDVI must have the same number of layers as entries in temperature!" = length(temperature) == raster::nlayers(NDVI))
+
+  NDVI_mean <- sapply(1:raster::nlayers(NDVI), function(i) raster::cellStats(NDVI[[i]], mean, nar.rm = TRUE))
+  NDVI_mean_rollmean <- zoo::rollmean(NDVI_mean, 31, fill = "expand", na.rm = TRUE)
+  temperature_rollmean <- zoo::rollmean(temperature, 31, fill = "expand", na.rm = TRUE)
+
+  temperature_opt <- temperature_rollmean[which.max(NDVI_mean_rollmean)]
+  temperature_opt
 }
