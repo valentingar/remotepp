@@ -57,12 +57,14 @@ CASA <- function(PAR,
     FAPAR <- do.call(calc_FAPAR, dots[names(dots) %in% names(formals(calc_FAPAR))])
   }
 
-  if (is.numeric(PAR)){
-    stopifnot(raster::nlayers(FAPAR) == length(PAR))
-  } else {
-    stopifnot(raster::nlayers(FAPAR) == raster::nlayers(PAR))
-  }
+  FAPAR <- as(FAPAR, "SpatRaster")
 
+
+  if (is.numeric(PAR)){
+    stopifnot(terra::nlyr(FAPAR) == length(PAR))
+  } else {
+    stopifnot(terra::nlyr(FAPAR) == length(PAR))
+  }
 
   NPP <- PAR * FAPAR * TSC1 * TSC2 * WSC * epsilon_max
   NPP

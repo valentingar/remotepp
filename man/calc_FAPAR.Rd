@@ -4,7 +4,7 @@
 \alias{calc_FAPAR}
 \title{FAPAR: Fraction of absorbed PAR}
 \usage{
-calc_FAPAR(NDVI, FAPAR_max = 0.95, FAPAR_min = 0.001)
+calc_FAPAR(NDVI, FAPAR_max = 0.95, FAPAR_min = 0.001, cores = 1)
 }
 \arguments{
 \item{NDVI}{A raster(stack) of NDVI values}
