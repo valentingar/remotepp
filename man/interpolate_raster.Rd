@@ -9,9 +9,10 @@ interpolate_raster(
   in_dates,
   out_dates,
   out_dir,
-  interpolation_function = function(x, y, xout) (approx(x, y, xout, ties = mean))$y,
+  interpolation_function = function(xin, y, xout) (approx(xin, y, xout, ties = mean))$y,
   interpolation_arguments = list(),
-  overwrite = FALSE
+  overwrite = FALSE,
+  cores = max(c(parallelly::availableCores() - 1, 1))
 )
 }
 \description{

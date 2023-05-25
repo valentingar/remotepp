@@ -67,8 +67,11 @@ precipitation. \cr
     \item{\code{temperature}}{vector of mean daily temperature in °C}
     \item{\code{temperature_opt}}{the mean temperature of the month, where NDVI is highest in °C}
     \item{\code{NDVI}}{A raster(stack) of NDVI values}
-    \item{\code{FAPAR_max}}{constant, see Wang et al. (2017)}
+    \item{\code{vegetation_mask}}{A raster layer with classification of vegetation types.}
     \item{\code{FAPAR_min}}{constant, see Wang et al. (2017)}
+    \item{\code{FAPAR_max}}{constant, see Wang et al. (2017)}
+    \item{\code{quantile_min}}{numeric (0,1) for NDVI_min calculation, see Wang et al. (2017)}
+    \item{\code{quantile_max}}{numeric (0,1) for NDVI_max calculation, see Wang et al. (2017)}
   }}
 }
 \value{
