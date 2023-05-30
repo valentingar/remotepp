@@ -61,7 +61,7 @@ validate_rpp_CASA <- function(x) {
 
 
 ### METHODS ###
-#' @exportS3Method
+#' @export
 print.rpp_CASA <- function(
     x,
     ...) {
@@ -80,3 +80,12 @@ print.rpp_CASA <- function(
   cat("resolution: ")
   cat(terra::res(x$NPP)[1:2], "(x y) \n")
 }
+
+WSC_type <- function(x){
+  UseMethod("WSC_type")
+}
+WSC_type.rpp_CASA <- function(x){
+  attr(x, "WSC_type")
+}
+
+
