@@ -37,14 +37,27 @@ calc_FAPAR <- function(NDVI,
     vegetation_mask <- as(vegetation_mask, "SpatRaster")
   }
 
+
+
+  df <- as.data.frame(c(vegetation_mask,
+                        NDVI))
+
   NDVI_quantiles <-
-  terra::zonal(NDVI,
-               vegetation_mask,
-               fun = function(x, ...) x) %>%
-    apply(MARGIN = 1, FUN = function(x) quantile(unlist(x[-1]), #first entry is zone identifyer
-                                                 probs = c(quantile_min,
-                                                              quantile_max),
-                                                 na.rm = TRUE))
+    split(df[,-1], df[,1]) %>%
+    lapply(quantile,
+           probs = c(quantile_min, quantile_max),
+           na.rm = TRUE) %>%
+    do.call(rbind, .) %>%
+    t()
+
+  # NDVI_quantiles <-
+  # terra::zonal(NDVI,
+  #              vegetation_mask,
+  #              fun = function(x, ...) x) %>%
+  #   apply(MARGIN = 1, FUN = function(x) quantile(unlist(x[-1]), #first entry is zone identifyer
+  #                                                probs = c(quantile_min,
+  #                                                             quantile_max),
+  #                                                na.rm = TRUE))
 
   NDVI_min <- NDVI_max <- vegetation_mask
   terra::values(NDVI_min) <- NDVI_quantiles[1, terra::values(vegetation_mask)]
