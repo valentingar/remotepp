@@ -2,6 +2,7 @@
 
 S3method(ndvi,RasterStack)
 S3method(ndvi,character)
+S3method(print,rpp_CASA)
 export(CASA)
 export(ET_FAO56)
 export(calc_FAPAR)
