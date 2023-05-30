@@ -68,4 +68,12 @@ CASA <- function(PAR,
 
   NPP <- PAR * FAPAR * TSC1 * TSC2 * WSC * epsilon_max
   NPP
+
+  rpp_CASA(NPP = NPP,
+           PAR = PAR,
+           FAPAR = FAPAR,
+           TSC1 = TSC1,
+           TSC2 = TSC2,
+           WSC = WSC,
+           epsilon_max = epsilon_max)
 }
