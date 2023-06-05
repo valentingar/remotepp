@@ -43,7 +43,7 @@ precipitation. \cr
 
 }}
 
-\item{D_e}{vector of mean daily vapour pressure deficit in kPa}
+\item{D_e}{vector of mean daily vapor pressure deficit in kPa}
 
 \item{SWIR1}{A raster stack where each layer is one time point.}
 

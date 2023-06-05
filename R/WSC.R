@@ -31,7 +31,7 @@
 #'   Bao et al. (2015)}
 #'
 #' }
-#' @param D_e vector of mean daily vapour pressure deficit in kPa
+#' @param D_e vector of mean daily vapor pressure deficit in kPa
 #' @param SWIR1 A raster stack where each layer is one time point.
 #' @param SWIR2 A raster stack where each layer is one time point.
 #' @param NIR A raster stack where each layer is one time point.
