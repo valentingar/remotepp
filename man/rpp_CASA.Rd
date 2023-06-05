@@ -11,7 +11,8 @@ rpp_CASA(
   TSC1 = c(),
   TSC2 = c(),
   WSC = c(),
-  epsilon_max = numeric()
+  epsilon_max = numeric(),
+  dates = c()
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ representing one day. If missing, is calculated using `calc_FAPAR()`}
 \item{WSC}{Water stress coefficient. If missing, is calculated using `calc_WSC()`}
 
 \item{epsilon_max}{The maximum light use efficiency (LUE) in g-C MJ^{-1}}
+
+\item{dates}{A vector the same length as PAR giving the dates.}
 
 \item{x}{a CASA model list}
 }

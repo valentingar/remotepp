@@ -16,7 +16,8 @@ rpp_CASA <- function(
     TSC1 = c(),
     TSC2 = c(),
     WSC = c(),
-    epsilon_max = numeric()) {
+    epsilon_max = numeric(),
+    dates = c()) {
 
 
   if(class(WSC) == class(terra::rast())){
@@ -34,7 +35,8 @@ rpp_CASA <- function(
       TSC1 = TSC1,
       TSC2 = TSC2,
       WSC = WSC,
-      epsilon_max = epsilon_max
+      epsilon_max = epsilon_max,
+      dates = dates
       ),
     WSC_type = WSC_type
   )
@@ -68,7 +70,7 @@ print.rpp_CASA <- function(
   n_layers <- length(names(x$NPP))
   cat("A CASA Model output with", n_layers, "layers: \n")
   n_print <- min(c(10, n_layers))
-  cat(names(x$NPP)[1:n_print])
+  cat(x$dates[1:n_print])
   if(n_layers > n_print){
     cat("...")
   }

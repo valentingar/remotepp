@@ -12,6 +12,7 @@
 #'@param TSC1 Temperature stress coefficient 1. If missing, is calculated using `calc_TSC1()`
 #'@param TSC2 Temperature stress coefficient 2. If missing, is calculated using `calc_TSC2()`
 #'@param epsilon_max The maximum light use efficiency (LUE) in g-C MJ^{-1}
+#'@param dates A vector the same length as PAR giving the dates.
 #'
 #'@inheritDotParams calc_WSC
 #'@inheritDotParams calc_TSC1
@@ -32,9 +33,15 @@ CASA <- function(PAR,
                  TSC1 = NULL,
                  TSC2 = NULL,
                  epsilon_max = 0.608,
+                 dates = NULL,
                  ...){
 
   dots <- list(...)
+
+  stopifnot("Please provide dates!" = !is.null(dates))
+
+  n_PAR <- length(PAR)
+  stopifnot("Dates must match length of PAR" = length(dates) == n_PAR)
 
   if ((is.null(TSC1) | is.null(TSC2)) & is.null(dots$temperature_opt)){
     dots$temperature_opt <- calc_temperature_opt(dots$NDVI,
@@ -60,14 +67,27 @@ CASA <- function(PAR,
   FAPAR <- as(FAPAR, "SpatRaster")
 
 
-  if (is.numeric(PAR)){
-    stopifnot(terra::nlyr(FAPAR) == length(PAR))
+  if (is.numeric(FAPAR)){
+    n_FAPAR <- length(FAPAR)
   } else {
-    stopifnot(terra::nlyr(FAPAR) == length(PAR))
+    n_FAPAR <- terra::nlyr(FAPAR)
   }
 
+  if (is.numeric(WSC)){
+    n_WSC <- length(WSC)
+  } else {
+    n_WSC <- terra::nlyr(WSC)
+  }
+
+  n_TSC1 <- length(TSC1)
+  n_TSC2 <- length(TSC2)
+  n_WSC <- length(WSC)
+
+  stopifnot("Lengths don't match! Check input to be the same temporal resolution and length!" =
+              length(unique(c(n_PAR, n_FAPAR, n_TSC1, n_TSC2, n_WSC))) == 1)
+
   NPP <- PAR * FAPAR * TSC1 * TSC2 * WSC * epsilon_max
-  NPP
+  names(NPP) <- dates
 
   rpp_CASA(NPP = NPP,
            PAR = PAR,
@@ -75,5 +95,6 @@ CASA <- function(PAR,
            TSC1 = TSC1,
            TSC2 = TSC2,
            WSC = WSC,
-           epsilon_max = epsilon_max)
+           epsilon_max = epsilon_max,
+           dates)
 }

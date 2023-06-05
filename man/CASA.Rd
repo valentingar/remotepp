@@ -11,6 +11,7 @@ CASA(
   TSC1 = NULL,
   TSC2 = NULL,
   epsilon_max = 0.608,
+  dates = NULL,
   ...
 )
 }
@@ -27,6 +28,8 @@ representing one day. If missing, is calculated using `calc_FAPAR()`}
 \item{TSC2}{Temperature stress coefficient 2. If missing, is calculated using `calc_TSC2()`}
 
 \item{epsilon_max}{The maximum light use efficiency (LUE) in g-C MJ^{-1}}
+
+\item{dates}{A vector the same length as PAR giving the dates.}
 
 \item{...}{
   Arguments passed on to \code{\link[=calc_WSC]{calc_WSC}}, \code{\link[=calc_TSC1]{calc_TSC1}}, \code{\link[=calc_TSC2]{calc_TSC2}}, \code{\link[=calc_FAPAR]{calc_FAPAR}}

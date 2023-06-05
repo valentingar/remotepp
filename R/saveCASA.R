@@ -47,13 +47,13 @@ saveCASA.rpp_CASA <- function(x,
   }
 
   x <- list(NPP = NPP,
-            x$PAR,
+            PAR = x$PAR,
             FAPAR = FAPAR,
-            x$TSC1,
-            x$TSC2,
+            TSC1 = x$TSC1,
+            TSC2 = x$TSC2,
             WSC = WSC,
             epsilon_max = x$epsilon_max,
-            WSC_type = WSC_type,
+            dates = x$dates,
             write_WSC = write_WSC
             )
 
@@ -82,10 +82,11 @@ loadCASA.character <- function(file_path){
   }
 
   rpp_CASA(NPP = NPP,
-           x$PAR,
+           PAR = x$PAR,
            FAPAR = FAPAR,
-           x$TSC1,
-           x$TSC2,
+           TSC1 = x$TSC1,
+           TSC2 = x$TSC2,
            WSC = WSC,
-           epsilon_max = x$epsilon_max)
+           epsilon_max = x$epsilon_max,
+           dates = x$dates)
 }
