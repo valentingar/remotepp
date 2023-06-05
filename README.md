@@ -4,6 +4,11 @@
 # remotepp
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/remotepp)](https://CRAN.R-project.org/package=remotepp)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 remotepp implements different common models to estimate primary
@@ -11,7 +16,7 @@ production of ecosystems from remote sensing data. It is currently under
 development. So far, a basic version of the
 Carnegie-Ames-Stanford-Approach (CASA) has been implemented.
 
-For questions, message code <at> valentingartiser.de
+For questions, message code \[at\] valentingartiser.de
 
 ## Installation
 
