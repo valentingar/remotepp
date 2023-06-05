@@ -10,9 +10,10 @@ interpolate_raster <- function(input_files,
                                in_dates,
                                out_dates,
                                out_dir,
-                               interpolation_function = function(x, y, xout) (approx(x, y, xout, ties = mean))$y,
+                               interpolation_function = function(xin, y, xout) (approx(xin, y, xout, ties = mean))$y,
                                interpolation_arguments = list(), # further arguments passed to interpolation function()
-                               overwrite = FALSE
+                               overwrite = FALSE,
+                               cores = max(c(parallelly::availableCores() - 1, 1))
 ){
 
   stopifnot("Not all files exist!" = all(sapply(input_files, file.exists)))
@@ -36,117 +37,53 @@ interpolate_raster <- function(input_files,
   layer_names <- names(raster::stack(input_files[1]))
 
   out_files_tmp <- sapply(1:n_layers,
-                          raster::rasterTmpFile) |>
-    matrix(ncol = n_layers)
+                          raster::rasterTmpFile)
+  out_files_tmp <- gsub(".grd", ".tif", out_files_tmp) # terra cannot handle large .grd??
 
   on.exit(raster::removeTmpFiles(h = 0))
+
+  p <- progressr::progressor(n_layers)
 
   # loop over layers
  purrr::map(1:n_layers, function(current_layer){
 
-  out_file <- out_files_tmp[1, current_layer]
+  out_file <- out_files_tmp[current_layer]
 
   current_in_complete <- raster::stack(input_files, bands = current_layer)
+  current_in_complete <- as(current_in_complete, "SpatRaster")
 
-  current_tiles <- terra::makeTiles(terra::rast(current_in_complete),
-                                    ceiling(sqrt(prod(dim(current_in_complete)[1:2]) / parallelly::availableCores())),
-                                    filename = raster::rasterTmpFile())
+  current_out <- terra::app(current_in_complete,
+                            make_interpolation_function_safe(interpolation_function),
+                            filename = out_file,
+                            overwrite = TRUE,
+                            xin = in_dates,
+                            xout = out_dates,
+                            cores = cores)
 
-  p <- progressr::progressor(length(current_tiles))
-
-
-  furrr::future_map(current_tiles, function(current_in_filename){
-
-    current_in <- raster::stack(current_in_filename)
-
-    current_in <- raster::readStart(current_in)
-
-    current_brick <- raster::brick(nrows = nrow(current_in),
-                                   ncols = ncol(current_in),
-                                   nl = length(out_dates),
-                                   crs = raster::crs(current_in))
-    raster::extent(current_brick) <- raster::extent(current_in)
-
-    block_size <- raster::blockSize(current_brick)
-
-    current_out_filename <- paste0(tools::file_path_sans_ext(current_in_filename),
-                                   "_out.",
-                                   tools::file_ext(current_in_filename))
-
-    current_out <- raster::writeStart(current_brick,
-                                      filename = current_out_filename,
-                                      overwrite = TRUE)
-
-
-
-
-    for (i in seq_along(block_size$row)) {
-      # read values for block
-      current_row <- raster::getValues(current_in,
-                                       row = block_size$row[i],
-                                       nrows = block_size$nrows[i])
-
-      current_row <- t(apply(current_row,
-                             FUN = function(x){
-
-                               tryCatch(x <-
-                                          do.call(
-                                            interpolation_function,
-                                            c(list(x = in_dates,
-                                                   y = x,
-                                                   xout =  out_dates),
-                                              interpolation_arguments)
-                                          ),
-                                        error = function(cond) rep(NA, length(out_dates)))
-
-                             },
-                             MARGIN = 1))
-
-      current_out <- raster::writeValues(current_out,
-                                         current_row,
-                                         block_size$row[i])
-
-
-
-    }
-
-    current_out <- raster::writeStop(current_out)
-    on.exit(current_in <- raster::readStop(current_in))
-
-    p()
-
-    NULL
-
-
+  p()
 
   })
 
-  #terra::vrt(paste0(tools::file_path_sans_ext(current_tiles),
-  #                  "_out.",
-  #                  tools::file_ext(current_tiles)),
-  #           filename = out_file,
-  #           overwrite = TRUE)
-
-  current_interpolated <-
-  do.call(raster::merge,
-          lapply(paste0(tools::file_path_sans_ext(current_tiles),
-                        "_out.",
-                        tools::file_ext(current_tiles)),
-                 raster::stack))
-
-  raster::writeRaster(current_interpolated,
-                      filename = out_file,
-                      overwrite = TRUE)
-
-
-  })
-
-  purrr::map(1:length(out_files_final), function(i){
-    current_out <- raster::stack(out_files_tmp[1, ], bands = i)
+  furrr::future_map(1:length(out_files_final), function(i){
+    #current_out <- raster::stack(out_files_tmp[1, ], bands = i)
     #current_out <- terra::rast(out_files_tmp[1, ], lyrs = rep(i, ncol(out_files_tmp)))
     #names(current_out) <- layer_names
-    raster::writeRaster(current_out, out_files_final[i])
+    #raster::writeRaster(current_out, out_files_final[i])
+
+    current_out <- terra::rast(lapply(out_files_tmp, function(x) terra::rast(x, lyrs = i)))
+    names(current_out) <- layer_names
+    #current_out
+    terra::writeRaster(current_out, out_files_final[i])
   })
 
-  NULL
+  #NULL
+}
+
+
+### helper ---------------------------------------------------------------------
+
+make_interpolation_function_safe <- function(interpolation_function){
+  function(xin, y, xout, ...){
+    tryCatch(interpolation_function(xin, y, xout), error = function(cond) rep(NA, length(xout)))
+  }
 }

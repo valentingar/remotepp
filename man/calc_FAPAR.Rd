@@ -4,14 +4,27 @@
 \alias{calc_FAPAR}
 \title{FAPAR: Fraction of absorbed PAR}
 \usage{
-calc_FAPAR(NDVI, FAPAR_max = 0.95, FAPAR_min = 0.001, cores = 1)
+calc_FAPAR(
+  NDVI,
+  vegetation_mask = NULL,
+  FAPAR_min = 0.001,
+  FAPAR_max = 0.95,
+  quantile_min = 0.05,
+  quantile_max = 0.95
+)
 }
 \arguments{
 \item{NDVI}{A raster(stack) of NDVI values}
 
-\item{FAPAR_max}{constant, see Wang et al. (2017)}
+\item{vegetation_mask}{A raster layer with classification of vegetation types.}
 
 \item{FAPAR_min}{constant, see Wang et al. (2017)}
+
+\item{FAPAR_max}{constant, see Wang et al. (2017)}
+
+\item{quantile_min}{numeric (0,1) for NDVI_min calculation, see Wang et al. (2017)}
+
+\item{quantile_max}{numeric (0,1) for NDVI_max calculation, see Wang et al. (2017)}
 }
 \description{
 FAPAR: Fraction of absorbed PAR

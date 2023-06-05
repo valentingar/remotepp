@@ -98,23 +98,26 @@ WSC_deficit <- function(D_e){
 WSC_SIMI <- function(SWIR1, SWIR2){
 
   stopifnot("SWIR1 and SWIR2 dont have the same number of layers!" = raster::nlayers(SWIR1) == raster::nlayers(SWIR2))
-  stopfinot("resolution of SWIR1 and SWIR2 dont match" = raster::res(SWIR1) == raster::res(SWIR2))
-  stopfinot("extent of SWIR1 and SWIR2 dont match" = raster::extent(SWIR1) == raster::entent(SWIR2))
+  stopifnot("resolution of SWIR1 and SWIR2 dont match" = raster::res(SWIR1) == raster::res(SWIR2))
+  stopifnot("extent of SWIR1 and SWIR2 dont match" = raster::extent(SWIR1) == raster::extent(SWIR2))
+
+  SWIR1 <- as(SWIR1, "SpatRaster")
+  SWIR2 <- as(SWIR2, "SpatRaster")
 
   SIMI <- SIMI(SWIR1, SWIR2)
   SIMI_min <- min(SIMI) # pixel-wise min of timeseries
   SIMI_max <- max(SIMI) # pixel-wise max of timeseries
   NSIMI <- (SIMI - SIMI_min) / (SIMI_max - SIMI_min)
   WSC_out <-
-    0.5 + 0.5*NSIMI
+    0.5 + 0.5*(1 -NSIMI)
   WSC_out
 }
 
 WSC_LSWI <- function(SWIR1, NIR, prec){
 
   stopifnot("SWIR1 and NIR dont have the same number of layers!" = raster::nlayers(SWIR1) == raster::nlayers(NIR))
-  stopfinot("resolution of SWIR1 and NIR dont match" = raster::res(SWIR1) == raster::res(NIR))
-  stopfinot("extent of SWIR1 and NIR dont match" = raster::extent(SWIR1) == raster::entent(NIR))
+  stopifnot("resolution of SWIR1 and NIR dont match" = raster::res(SWIR1) == raster::res(NIR))
+  stopifnot("extent of SWIR1 and NIR dont match" = raster::extent(SWIR1) == raster::extent(NIR))
   stopifnot("length of prec does not match number of layers!" = raster::nlayers(SWIR1) == length(prec))
 
   prec_rollsum <- zoo::rollsum(prec, 31,
